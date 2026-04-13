@@ -1,0 +1,490 @@
+{% extends 'ecom/customer_base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .orders-page {
+        min-height: 80vh;
+        background: linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)),
+                    url('https://images.unsplash.com/photo-1464226184884-fa280b87c399?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80');
+        background-size: cover;
+        background-attachment: fixed;
+        padding: 40px;
+    }
+    
+    .orders-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .welcome-header {
+        text-align: center;
+        margin-bottom: 40px;
+        padding: 30px;
+        background: linear-gradient(135deg, #2C5F2D 0%, #4A7856 100%);
+        border-radius: 20px;
+        color: white;
+        box-shadow: 0 10px 30px rgba(44, 95, 45, 0.3);
+    }
+    
+    .welcome-header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+    
+    .welcome-header p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+    
+    .orders-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+    }
+    
+    .order-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .order-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+    
+    .order-header {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        padding: 20px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        border-bottom: 1px solid #dee2e6;
+    }
+    
+    .order-id {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #2C5F2D;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .order-id i {
+        color: #4A7856;
+    }
+    
+    .order-date {
+        color: #6c757d;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .order-body {
+        padding: 30px;
+    }
+    
+    .order-details {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr 1fr;
+        gap: 30px;
+        margin-bottom: 30px;
+    }
+    
+    .product-info {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+    }
+    
+    .product-image {
+        width: 120px;
+        height: 120px;
+        border-radius: 15px;
+        overflow: hidden;
+        border: 3px solid #4A7856;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .product-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .product-details h3 {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #2C5F2D;
+        margin-bottom: 8px;
+    }
+    
+    .product-details p {
+        color: #6c757d;
+        margin-bottom: 10px;
+        line-height: 1.6;
+    }
+    
+    .product-price {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #4A7856;
+    }
+    
+    .address-info, .status-info {
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 15px;
+    }
+    
+    .address-info h4, .status-info h4 {
+        font-size: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #6c757d;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .address-info h4 i, .status-info h4 i {
+        color: #4A7856;
+    }
+    
+    .address-text {
+        color: #2C5F2D;
+        font-weight: 500;
+        line-height: 1.6;
+    }
+    
+    .current-status {
+        display: inline-block;
+        padding: 8px 20px;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        margin-bottom: 15px;
+    }
+    
+    .status-pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+    
+    .status-confirmed {
+        background: #cce5ff;
+        color: #004085;
+    }
+    
+    .status-outfordelivery {
+        background: #d4edda;
+        color: #155724;
+    }
+    
+    .status-delivered {
+        background: #d1e7dd;
+        color: #0f5132;
+    }
+    
+    .invoice-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #4A7856;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .invoice-link:hover {
+        color: #2C5F2D;
+        transform: translateX(5px);
+    }
+    
+    /* Tracking Timeline */
+    .tracking-timeline {
+        margin-top: 30px;
+        padding-top: 30px;
+        border-top: 2px dashed #dee2e6;
+    }
+    
+    .timeline-steps {
+        display: flex;
+        justify-content: space-between;
+        position: relative;
+        margin-bottom: 20px;
+    }
+    
+    .timeline-steps::before {
+        content: '';
+        position: absolute;
+        top: 20px;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: #e9ecef;
+        z-index: 1;
+    }
+    
+    .timeline-step {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        flex: 1;
+    }
+    
+    .step-icon {
+        width: 50px;
+        height: 50px;
+        background: white;
+        border: 3px solid #e9ecef;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 15px;
+        transition: all 0.3s ease;
+    }
+    
+    .step-icon i {
+        font-size: 1.3rem;
+        color: #adb5bd;
+    }
+    
+    .step.active .step-icon {
+        background: #4A7856;
+        border-color: #4A7856;
+    }
+    
+    .step.active .step-icon i {
+        color: white;
+    }
+    
+    .step.completed .step-icon {
+        background: #2C5F2D;
+        border-color: #2C5F2D;
+    }
+    
+    .step.completed .step-icon i {
+        color: white;
+    }
+    
+    .step-label {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #6c757d;
+    }
+    
+    .step.active .step-label,
+    .step.completed .step-label {
+        color: #2C5F2D;
+    }
+    
+    /* Empty State */
+    .empty-orders {
+        text-align: center;
+        padding: 80px 20px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .empty-orders i {
+        font-size: 5rem;
+        color: #4A7856;
+        margin-bottom: 20px;
+        opacity: 0.5;
+    }
+    
+    .empty-orders h3 {
+        font-size: 2rem;
+        color: #2C5F2D;
+        margin-bottom: 15px;
+    }
+    
+    .empty-orders p {
+        color: #6c757d;
+        margin-bottom: 30px;
+    }
+    
+    .shop-now-btn {
+        background: linear-gradient(135deg, #2C5F2D 0%, #4A7856 100%);
+        color: white;
+        padding: 15px 40px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.3s ease;
+    }
+    
+    .shop-now-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(44, 95, 45, 0.3);
+        color: white;
+    }
+    
+    @media (max-width: 992px) {
+        .order-details {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        
+        .orders-page {
+            padding: 20px;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .product-info {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .order-header {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .timeline-steps {
+            flex-wrap: wrap;
+        }
+        
+        .timeline-step {
+            min-width: 50%;
+            margin-bottom: 20px;
+        }
+    }
+</style>
+
+<div class="orders-page">
+    <div class="orders-container">
+        <div class="welcome-header">
+            <h1>Thank You for Your Order!</h1>
+            <p>Dear <strong>{{ request.user }}</strong>, we appreciate your business</p>
+        </div>
+        
+        {% if data %}
+        <div class="orders-grid">
+            {% for products, order in data %}
+            <div class="order-card">
+                <div class="order-header">
+                    <div class="order-id">
+                        <i class="fas fa-receipt"></i>
+                        Order #{{ order.id }}
+                    </div>
+                    <div class="order-date">
+                        <i class="fas fa-calendar-alt"></i>
+                        {{ order.order_date|date:"F d, Y" }}
+                    </div>
+                </div>
+                
+                <div class="order-body">
+                    {% for product in products %}
+                    <div class="order-details">
+                        <div class="product-info">
+                            <div class="product-image">
+                                <img src="{{ product.product_image.url }}" alt="{{ product.name }}">
+                            </div>
+                            <div class="product-details">
+                                <h3>{{ product.name }}</h3>
+                                <p>{{ product.description|truncatechars:80 }}</p>
+                                <div class="product-price">${{ product.price }}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="address-info">
+                            <h4><i class="fas fa-truck"></i> Delivery Address</h4>
+                            <div class="address-text">
+                                {{ order.address|linebreaks }}
+                            </div>
+                        </div>
+                        
+                        <div class="status-info">
+                            <h4><i class="fas fa-clock"></i> Order Status</h4>
+                            {% if order.status == 'Pending' %}
+                            <span class="current-status status-pending">
+                                <i class="fas fa-hourglass-half me-2"></i>{{ order.status }}
+                            </span>
+                            {% elif order.status == 'Order Confirmed' %}
+                            <span class="current-status status-confirmed">
+                                <i class="fas fa-check-circle me-2"></i>{{ order.status }}
+                            </span>
+                            {% elif order.status == 'Out for Delivery' %}
+                            <span class="current-status status-outfordelivery">
+                                <i class="fas fa-truck me-2"></i>{{ order.status }}
+                            </span>
+                            {% elif order.status == 'Delivered' %}
+                            <span class="current-status status-delivered">
+                                <i class="fas fa-check-double me-2"></i>{{ order.status }}
+                            </span>
+                            {% endif %}
+                            
+                            <a href="{% url 'download-invoice' order.id product.id %}" class="invoice-link">
+                                <i class="fas fa-file-pdf"></i>
+                                Download Invoice
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                    <div class="tracking-timeline">
+                        <div class="timeline-steps">
+                            <div class="timeline-step {% if order.status != 'Pending' %}completed{% else %}active{% endif %}">
+                                <div class="step-icon">
+                                    <i class="fas fa-clipboard-list"></i>
+                                </div>
+                                <div class="step-label">Pending</div>
+                            </div>
+                            
+                            <div class="timeline-step {% if order.status == 'Order Confirmed' or order.status == 'Out for Delivery' or order.status == 'Delivered' %}completed{% elif order.status != 'Pending' %}active{% endif %}">
+                                <div class="step-icon">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="step-label">Confirmed</div>
+                            </div>
+                            
+                            <div class="timeline-step {% if order.status == 'Out for Delivery' or order.status == 'Delivered' %}completed{% elif order.status == 'Order Confirmed' %}active{% endif %}">
+                                <div class="step-icon">
+                                    <i class="fas fa-truck"></i>
+                                </div>
+                                <div class="step-label">Out for Delivery</div>
+                            </div>
+                            
+                            <div class="timeline-step {% if order.status == 'Delivered' %}completed{% elif order.status == 'Out for Delivery' %}active{% endif %}">
+                                <div class="step-icon">
+                                    <i class="fas fa-home"></i>
+                                </div>
+                                <div class="step-label">Delivered</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-orders">
+            <i class="fas fa-box-open"></i>
+            <h3>No Orders Yet</h3>
+            <p>Looks like you haven't placed any orders yet.</p>
+            <a href="/" class="shop-now-btn">
+                <i class="fas fa-shopping-bag"></i>
+                Start Shopping
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

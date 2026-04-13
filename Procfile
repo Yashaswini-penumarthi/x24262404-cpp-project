@@ -1,0 +1,1 @@
+web: gunicorn agro_market.wsgi:application

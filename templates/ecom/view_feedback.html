@@ -1,0 +1,544 @@
+{% extends 'ecom/admin_base.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+    .feedback-section {
+        padding: 20px 0;
+    }
+    
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+    
+    .page-title {
+        font-size: 2rem;
+        font-weight: 600;
+        color: #2C5F2D;
+        position: relative;
+        padding-bottom: 15px;
+        margin-bottom: 0;
+    }
+    
+    .page-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(90deg, #2C5F2D, #4A7856);
+        border-radius: 2px;
+    }
+    
+    .stats-badge {
+        background: linear-gradient(135deg, #2C5F2D 0%, #4A7856 100%);
+        color: white;
+        padding: 10px 25px;
+        border-radius: 50px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 5px 15px rgba(44, 95, 45, 0.2);
+    }
+    
+    .stats-badge i {
+        color: #FFE5B4;
+    }
+    
+    /* Feedback Grid */
+    .feedback-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+        gap: 25px;
+        margin-top: 30px;
+    }
+    
+    .feedback-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        position: relative;
+        border: 1px solid rgba(74, 120, 86, 0.1);
+    }
+    
+    .feedback-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+    
+    .feedback-header {
+        background: linear-gradient(135deg, #2C5F2D 0%, #4A7856 100%);
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        position: relative;
+    }
+    
+    .user-avatar {
+        width: 60px;
+        height: 60px;
+        background: #FFE5B4;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 3px solid white;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .user-avatar i {
+        font-size: 2rem;
+        color: #2C5F2D;
+    }
+    
+    .user-info {
+        flex: 1;
+    }
+    
+    .user-name {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: white;
+        margin-bottom: 5px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .feedback-date {
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.9);
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .feedback-date i {
+        color: #FFE5B4;
+    }
+    
+    .close-btn {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        width: 30px;
+        height: 30px;
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        border-radius: 50%;
+        color: white;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        z-index: 10;
+    }
+    
+    .close-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: rotate(90deg);
+    }
+    
+    .feedback-content {
+        padding: 25px;
+    }
+    
+    .feedback-text {
+        color: #495057;
+        line-height: 1.8;
+        font-size: 1rem;
+        position: relative;
+        padding-left: 25px;
+        margin-bottom: 20px;
+    }
+    
+    .feedback-text::before {
+        content: '"';
+        position: absolute;
+        left: 0;
+        top: -10px;
+        font-size: 3rem;
+        color: #4A7856;
+        opacity: 0.3;
+        font-family: serif;
+    }
+    
+    .feedback-meta {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        padding-top: 15px;
+        border-top: 1px solid #e9ecef;
+    }
+    
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.85rem;
+        color: #6c757d;
+        background: #f8f9fa;
+        padding: 5px 12px;
+        border-radius: 30px;
+    }
+    
+    .meta-item i {
+        color: #4A7856;
+    }
+    
+    .meta-item.highlight {
+        background: #4A7856;
+        color: white;
+    }
+    
+    .meta-item.highlight i {
+        color: #FFE5B4;
+    }
+    
+    /* Rating Stars */
+    .rating {
+        display: flex;
+        gap: 3px;
+        margin-left: auto;
+    }
+    
+    .rating i {
+        color: #FFD700;
+        font-size: 0.9rem;
+    }
+    
+    .rating i.empty {
+        color: #e9ecef;
+    }
+    
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        max-width: 600px;
+        margin: 50px auto;
+    }
+    
+    .empty-state i {
+        font-size: 5rem;
+        color: #4A7856;
+        margin-bottom: 20px;
+        opacity: 0.5;
+    }
+    
+    .empty-state h3 {
+        font-size: 2rem;
+        color: #2C5F2D;
+        margin-bottom: 15px;
+    }
+    
+    .empty-state p {
+        color: #6c757d;
+        margin-bottom: 25px;
+    }
+    
+    /* Filter Bar */
+    .filter-bar {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 30px;
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        align-items: center;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    }
+    
+    .search-input {
+        flex: 1;
+        min-width: 250px;
+        padding: 12px 20px;
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+    }
+    
+    .search-input:focus {
+        outline: none;
+        border-color: #4A7856;
+        box-shadow: 0 0 0 4px rgba(74, 120, 86, 0.1);
+    }
+    
+    .filter-select {
+        padding: 12px 25px;
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        color: #495057;
+        background: white;
+        cursor: pointer;
+        min-width: 150px;
+    }
+    
+    .filter-select:focus {
+        outline: none;
+        border-color: #4A7856;
+    }
+    
+    /* Animation */
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .feedback-card {
+        animation: slideIn 0.5s ease forwards;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .section-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .feedback-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .filter-bar {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .search-input,
+        .filter-select {
+            width: 100%;
+        }
+        
+        .feedback-header {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .user-info {
+            text-align: center;
+        }
+        
+        .rating {
+            margin: 10px auto 0;
+        }
+    }
+</style>
+
+<div class="feedback-section">
+    <div class="section-header">
+        <h1 class="page-title">
+            <i class="fas fa-comments me-3"></i>Customer Feedback
+        </h1>
+        
+        <div class="stats-badge">
+            <i class="fas fa-star"></i>
+            <span>Total Feedbacks: {{ feedbacks|length }}</span>
+        </div>
+    </div>
+    
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+        <input type="text" class="search-input" id="searchInput" placeholder="Search by name or feedback content...">
+        <select class="filter-select" id="dateFilter">
+            <option value="all">All Time</option>
+            <option value="today">Today</option>
+            <option value="week">This Week</option>
+            <option value="month">This Month</option>
+        </select>
+    </div>
+    
+    {% if feedbacks %}
+    <div class="feedback-grid" id="feedbackGrid">
+        {% for f in feedbacks %}
+        <div class="feedback-card" data-name="{{ f.name|lower }}" data-feedback="{{ f.feedback|lower }}" data-date="{{ f.date|date:'Y-m-d' }}">
+            <div class="feedback-header">
+                <div class="close-btn" onclick="this.closest('.feedback-card').remove(); updateCount();">
+                    <i class="fas fa-times"></i>
+                </div>
+                
+                <div class="user-avatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                
+                <div class="user-info">
+                    <div class="user-name">
+                        <i class="fas fa-user"></i>
+                        {{ f.name }}
+                    </div>
+                    <div class="feedback-date">
+                        <i class="fas fa-calendar-alt"></i>
+                        {{ f.date|date:"F d, Y" }}
+                    </div>
+                </div>
+                
+                <div class="rating">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star-half-alt"></i>
+                </div>
+            </div>
+            
+            <div class="feedback-content">
+                <div class="feedback-text">
+                    {{ f.feedback }}
+                </div>
+                
+                <div class="feedback-meta">
+                    <span class="meta-item">
+                        <i class="fas fa-clock"></i>
+                        {{ f.date|date:"F d, Y" }}
+                    </span>
+                    <span class="meta-item">
+                        <i class="fas fa-hashtag"></i>
+                        ID: #{{ forloop.revcounter }}
+                    </span>
+                    <span class="meta-item highlight">
+                        <i class="fas fa-reply"></i>
+                        Reply
+                    </span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-comment-slash"></i>
+        <h3>No Feedback Yet</h3>
+        <p>There are no customer feedbacks to display at the moment.</p>
+        <div style="color: #6c757d; font-size: 0.9rem;">
+            <i class="fas fa-info-circle me-2"></i>
+            Feedbacks will appear here once customers submit them
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    // Search and filter functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('searchInput');
+        const dateFilter = document.getElementById('dateFilter');
+        const feedbackGrid = document.getElementById('feedbackGrid');
+        
+        if (feedbackGrid) {
+            const feedbackCards = feedbackGrid.getElementsByClassName('feedback-card');
+            
+            function filterFeedbacks() {
+                const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+                const dateValue = dateFilter ? dateFilter.value : 'all';
+                
+                const today = new Date();
+                const oneWeekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+                const oneMonthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+                
+                for (let card of feedbackCards) {
+                    let showCard = true;
+                    
+                    // Search filter
+                    if (searchTerm) {
+                        const name = card.dataset.name || '';
+                        const feedback = card.dataset.feedback || '';
+                        
+                        if (!name.includes(searchTerm) && !feedback.includes(searchTerm)) {
+                            showCard = false;
+                        }
+                    }
+                    
+                    // Date filter
+                    if (showCard && dateValue !== 'all') {
+                        const cardDate = new Date(card.dataset.date);
+                        
+                        switch(dateValue) {
+                            case 'today':
+                                if (cardDate.toDateString() !== today.toDateString()) {
+                                    showCard = false;
+                                }
+                                break;
+                            case 'week':
+                                if (cardDate < oneWeekAgo) {
+                                    showCard = false;
+                                }
+                                break;
+                            case 'month':
+                                if (cardDate < oneMonthAgo) {
+                                    showCard = false;
+                                }
+                                break;
+                        }
+                    }
+                    
+                    card.style.display = showCard ? '' : 'none';
+                }
+            }
+            
+            if (searchInput) {
+                searchInput.addEventListener('input', filterFeedbacks);
+            }
+            
+            if (dateFilter) {
+                dateFilter.addEventListener('change', filterFeedbacks);
+            }
+        }
+    });
+    
+    // Update count after removing cards
+    function updateCount() {
+        const feedbackGrid = document.getElementById('feedbackGrid');
+        const statsBadge = document.querySelector('.stats-badge span');
+        
+        if (feedbackGrid && statsBadge) {
+            const visibleCards = feedbackGrid.getElementsByClassName('feedback-card');
+            const count = visibleCards.length;
+            statsBadge.textContent = `Total Feedbacks: ${count}`;
+            
+            // Show empty state if no cards left
+            if (count === 0) {
+                const emptyState = document.createElement('div');
+                emptyState.className = 'empty-state';
+                emptyState.innerHTML = `
+                    <i class="fas fa-comment-slash"></i>
+                    <h3>No Feedback</h3>
+                    <p>All feedbacks have been cleared.</p>
+                `;
+                feedbackGrid.parentNode.replaceChild(emptyState, feedbackGrid);
+            }
+        }
+    }
+    
+    // Add animation on page load
+    window.addEventListener('load', function() {
+        const cards = document.querySelectorAll('.feedback-card');
+        cards.forEach((card, index) => {
+            card.style.animationDelay = `${index * 0.1}s`;
+        });
+    });
+</script>
+{% endblock %}

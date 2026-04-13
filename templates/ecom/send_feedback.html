@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+{% load static %}
+{% load widget_tweaks %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Send Feedback - AgroMarket</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            min-height: 100vh;
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+                        url('https://images.unsplash.com/photo-1464226184884-fa280b87c399?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        
+        .feedback-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 120px 20px 40px;
+        }
+        
+        .feedback-container {
+            max-width: 700px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        
+        .feedback-card {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.6s ease;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .feedback-header {
+            background: linear-gradient(135deg, #2C5F2D 0%, #4A7856 100%);
+            padding: 40px;
+            text-align: center;
+            color: white;
+        }
+        
+        .feedback-header i {
+            font-size: 3.5rem;
+            color: #FFE5B4;
+            margin-bottom: 15px;
+        }
+        
+        .feedback-header h2 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .feedback-header p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .feedback-body {
+            padding: 50px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #2C5F2D;
+            font-size: 1rem;
+        }
+        
+        .form-label i {
+            color: #4A7856;
+            margin-right: 8px;
+        }
+        
+        .required-star {
+            color: #dc3545;
+            margin-left: 4px;
+        }
+        
+        .input-group {
+            position: relative;
+        }
+        
+        .input-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #4A7856;
+            z-index: 10;
+            font-size: 1.2rem;
+        }
+        
+        .textarea-icon {
+            top: 25px;
+            transform: none;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 16px 20px 16px 55px;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+        
+        .form-control:focus {
+            border-color: #4A7856;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(74, 120, 86, 0.1);
+            background: white;
+        }
+        
+        textarea.form-control {
+            padding-top: 20px;
+            resize: vertical;
+            min-height: 150px;
+        }
+        
+        .rating-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .rating-label {
+            font-weight: 600;
+            color: #2C5F2D;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .stars {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .stars i {
+            font-size: 1.8rem;
+            color: #e9ecef;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .stars i.active,
+        .stars i:hover {
+            color: #FFD700;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #2C5F2D 0%, #4A7856 100%);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(44, 95, 45, 0.4);
+            background: linear-gradient(135deg, #1e431f 0%, #2C5F2D 100%);
+        }
+        
+        .submit-btn i {
+            font-size: 1.2rem;
+        }
+        
+        .feedback-footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e9ecef;
+        }
+        
+        .feedback-footer a {
+            color: #4A7856;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .feedback-footer a:hover {
+            color: #2C5F2D;
+            gap: 12px;
+        }
+        
+        .alert {
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.95rem;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        
+        @media (max-width: 768px) {
+            .feedback-page {
+                padding: 100px 15px 30px;
+            }
+            
+            .feedback-body {
+                padding: 30px 25px;
+            }
+            
+            .feedback-header {
+                padding: 30px 20px;
+            }
+            
+            .feedback-header h2 {
+                font-size: 1.8rem;
+            }
+            
+            .rating-section {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    {% if request.user.is_authenticated %}
+        {% include "ecom/customer_navbar.html" %}
+    {% else %}
+        {% include "ecom/navbar.html" %}
+    {% endif %}
+
+    <div class="feedback-page">
+        <div class="feedback-container">
+            <div class="feedback-card">
+                <div class="feedback-header">
+                    <i class="fas fa-comment-dots"></i>
+                    <h2>We Value Your Feedback</h2>
+                    <p>Help us improve your shopping experience</p>
+                </div>
+                
+                <div class="feedback-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }}">
+                                <i class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}exclamation-circle{% endif %}"></i>
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="form-group">
+                            <label class="form-label">
+                                Your Name
+                                <span class="required-star">*</span>
+                            </label>
+                            <div class="input-group">
+                                {% render_field feedbackForm.name class="form-control" placeholder="Enter your full name" %}
+                            </div>
+                        </div>
+                        
+                        
+                        
+                        <div class="form-group">
+                            <label class="form-label">
+                                Your Feedback
+                                <span class="required-star">*</span>
+                            </label>
+                            <div class="input-group">
+                                {% render_field feedbackForm.feedback class="form-control" placeholder="Please share your experience with us..." rows="5" %}
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="submit-btn">
+                            <i class="fas fa-paper-plane"></i>
+                            Send Feedback
+                        </button>
+                    </form>
+                    
+                    <div class="feedback-footer">
+                        <a href="/">
+                            <i class="fas fa-arrow-left"></i>
+                            Back to Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Star rating functionality
+        const stars = document.querySelectorAll('.stars i');
+        const ratingInput = document.getElementById('ratingValue');
+        
+        stars.forEach(star => {
+            star.addEventListener('mouseover', function() {
+                const rating = this.dataset.rating;
+                highlightStars(rating);
+            });
+            
+            star.addEventListener('mouseout', function() {
+                const currentRating = ratingInput.value;
+                highlightStars(currentRating);
+            });
+            
+            star.addEventListener('click', function() {
+                const rating = this.dataset.rating;
+                ratingInput.value = rating;
+                highlightStars(rating);
+            });
+        });
+        
+        function highlightStars(rating) {
+            stars.forEach(star => {
+                const starRating = star.dataset.rating;
+                if (starRating <= rating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+        }
+        
+        // Set default rating
+        highlightStars(5);
+        
+        // Form validation
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const name = document.querySelector('[name="name"]').value.trim();
+            const feedback = document.querySelector('[name="feedback"]').value.trim();
+            
+            if (!name || !feedback) {
+                e.preventDefault();
+                alert('Please fill in all required fields');
+            }
+        });
+        
+        // Auto-hide alerts after 5 seconds
+        document.querySelectorAll('.alert').forEach(alert => {
+            setTimeout(() => {
+                alert.style.transition = 'opacity 0.5s ease';
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 500);
+            }, 5000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,365 @@
+{% extends 'ecom/customer_base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .payment-page {
+        min-height: 80vh;
+        background: linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)),
+                    url('https://images.unsplash.com/photo-1464226184884-fa280b87c399?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80');
+        background-size: cover;
+        background-attachment: fixed;
+        padding: 40px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .payment-container {
+        max-width: 600px;
+        width: 100%;
+        margin: 0 auto;
+    }
+    
+    .demo-notice {
+        background: linear-gradient(135deg, #FFE5B4 0%, #FFD700 100%);
+        border-radius: 15px;
+        padding: 15px 25px;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        color: #2C5F2D;
+        font-weight: 600;
+        border: 2px solid #4A7856;
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.02); }
+    }
+    
+    .demo-notice i {
+        font-size: 2rem;
+    }
+    
+    .demo-notice p {
+        margin: 0;
+        font-size: 1rem;
+    }
+    
+    .payment-card {
+        background: white;
+        border-radius: 30px;
+        overflow: hidden;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        animation: slideUp 0.6s ease;
+    }
+    
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .payment-header {
+        background: linear-gradient(135deg, #2C5F2D 0%, #4A7856 100%);
+        padding: 30px;
+        text-align: center;
+        color: white;
+    }
+    
+    .payment-header i {
+        font-size: 3rem;
+        color: #FFE5B4;
+        margin-bottom: 10px;
+    }
+    
+    .payment-header h2 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+    
+    .payment-body {
+        padding: 40px;
+    }
+    
+    .amount-display {
+        background: #f8f9fa;
+        border-radius: 20px;
+        padding: 25px;
+        text-align: center;
+        margin-bottom: 30px;
+        border: 2px dashed #4A7856;
+    }
+    
+    .amount-label {
+        font-size: 1rem;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 10px;
+    }
+    
+    .amount-value {
+        font-size: 3rem;
+        font-weight: 700;
+        color: #2C5F2D;
+    }
+    
+    .amount-value small {
+        font-size: 1.5rem;
+        color: #6c757d;
+    }
+    
+    .form-group {
+        margin-bottom: 25px;
+    }
+    
+    .form-label {
+        display: block;
+        margin-bottom: 10px;
+        font-weight: 600;
+        color: #2C5F2D;
+        font-size: 0.95rem;
+    }
+    
+    .form-label i {
+        color: #4A7856;
+        margin-right: 8px;
+    }
+    
+    .input-group {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+    
+    .form-control {
+        flex: 1;
+        padding: 14px 20px;
+        border: 2px solid #e9ecef;
+        border-radius: 15px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: #f8f9fa;
+    }
+    
+    .form-control:focus {
+        border-color: #4A7856;
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(74, 120, 86, 0.1);
+        background: white;
+    }
+    
+    .input-group-append {
+        margin-left: -50px;
+        z-index: 10;
+    }
+    
+    .input-group-text {
+        background: transparent;
+        border: none;
+        color: #4A7856;
+        font-size: 1.2rem;
+    }
+    
+    .row {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .col {
+        flex: 1;
+    }
+    
+    .payment-summary {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 20px;
+        margin: 25px 0;
+    }
+    
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        color: #6c757d;
+    }
+    
+    .summary-row.total {
+        border-top: 2px solid #dee2e6;
+        margin-top: 10px;
+        padding-top: 15px;
+        color: #2C5F2D;
+        font-weight: 700;
+        font-size: 1.2rem;
+    }
+    
+    .pay-btn {
+        background: linear-gradient(135deg, #2C5F2D 0%, #4A7856 100%);
+        color: white;
+        border: none;
+        padding: 18px 40px;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 1.2rem;
+        width: 100%;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-top: 20px;
+    }
+    
+    .pay-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 40px rgba(44, 95, 45, 0.4);
+        background: linear-gradient(135deg, #1e431f 0%, #2C5F2D 100%);
+    }
+    
+    .pay-btn i {
+        font-size: 1.3rem;
+    }
+    
+    .secure-badge {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 20px;
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+    
+    .secure-badge i {
+        color: #4A7856;
+    }
+    
+    @media (max-width: 768px) {
+        .payment-page {
+            padding: 100px 15px 30px;
+        }
+        
+        .payment-body {
+            padding: 30px 20px;
+        }
+        
+        .row {
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .amount-value {
+            font-size: 2.5rem;
+        }
+    }
+</style>
+
+<div class="payment-page">
+    <div class="payment-container">
+        <!-- Demo Notice -->
+        <div class="demo-notice">
+            <i class="fas fa-info-circle"></i>
+            <p><strong>Demo Mode:</strong> This is a fake payment page for demonstration purposes. No real transactions will be processed.</p>
+        </div>
+        
+        <div class="payment-card">
+            <div class="payment-header">
+                <i class="fas fa-credit-card"></i>
+                <h2>Secure Payment</h2>
+                <p>Enter your payment details</p>
+            </div>
+            
+            <div class="payment-body">
+                <!-- Amount Display -->
+                <div class="amount-display">
+                    <div class="amount-label">Total Amount</div>
+                    <div class="amount-value">${{ total }} <small>USD</small></div>
+                </div>
+                
+                <form role="form" method="post">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-credit-card"></i>
+                            Card Number
+                        </label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="1234 5678 9012 3456" 
+                                   value="4242 4242 4242 4242" readonly>
+                            <div class="input-group-append">
+                                <span class="input-group-text">
+                                    <i class="fas fa-lock"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-calendar"></i>
+                                    Expiry Date
+                                </label>
+                                <input type="text" class="form-control" placeholder="MM/YY" value="12/25" readonly>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-lock"></i>
+                                    CVV
+                                </label>
+                                <input type="password" class="form-control" placeholder="123" value="123" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="payment-summary">
+                        <div class="summary-row">
+                            <span>Subtotal</span>
+                            <span>${{ total }}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Shipping</span>
+                            <span>Free</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Tax</span>
+                            <span>$0.00</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span>Total</span>
+                            <span>${{ total }}</span>
+                        </div>
+                    </div>
+                    
+                    <a href="/payment-success" class="pay-btn">
+                        <i class="fas fa-check-circle"></i>
+                        Pay ${{ total }}
+                    </a>
+                    
+                    <div class="secure-badge">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Secure SSL Encrypted Payment</span>
+                        <i class="fas fa-lock"></i>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

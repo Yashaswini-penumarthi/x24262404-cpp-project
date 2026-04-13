@@ -1,0 +1,474 @@
+{% extends 'ecom/admin_base.html' %}
+{% load widget_tweaks %}
+{% block content %}
+
+<style>
+    .update-order-page {
+        min-height: 80vh;
+        background: linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)),
+                    url('https://images.unsplash.com/photo-1464226184884-fa280b87c399?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80');
+        background-size: cover;
+        background-attachment: fixed;
+        padding: 40px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .update-container {
+        max-width: 600px;
+        width: 100%;
+        margin: 0 auto;
+    }
+    
+    .update-card {
+        background: white;
+        border-radius: 30px;
+        overflow: hidden;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        animation: slideUp 0.6s ease;
+    }
+    
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .update-header {
+        background: linear-gradient(135deg, #2C5F2D 0%, #4A7856 100%);
+        padding: 40px;
+        text-align: center;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .update-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        animation: rotate 20s linear infinite;
+    }
+    
+    @keyframes rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    
+    .update-header i {
+        font-size: 3.5rem;
+        color: #FFE5B4;
+        margin-bottom: 15px;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .update-header h2 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .update-header p {
+        font-size: 1rem;
+        opacity: 0.9;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .update-body {
+        padding: 40px;
+    }
+    
+    .order-info {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 30px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        border-left: 4px solid #4A7856;
+    }
+    
+    .order-info i {
+        font-size: 2rem;
+        color: #4A7856;
+    }
+    
+    .order-info-content {
+        flex: 1;
+    }
+    
+    .order-info-content h4 {
+        font-size: 1rem;
+        color: #6c757d;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .order-info-content p {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #2C5F2D;
+        margin: 0;
+    }
+    
+    .form-group {
+        margin-bottom: 30px;
+    }
+    
+    .form-label {
+        display: block;
+        margin-bottom: 15px;
+        font-weight: 600;
+        color: #2C5F2D;
+        font-size: 1rem;
+    }
+    
+    .form-label i {
+        color: #4A7856;
+        margin-right: 8px;
+    }
+    
+    .status-select {
+        width: 100%;
+        padding: 16px 20px;
+        border: 2px solid #e9ecef;
+        border-radius: 15px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: #f8f9fa;
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%234A7856' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 20px center;
+        background-size: 16px;
+    }
+    
+    .status-select:focus {
+        border-color: #4A7856;
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(74, 120, 86, 0.1);
+        background: white;
+    }
+    
+    .status-options {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        margin-top: 20px;
+    }
+    
+    .status-option {
+        background: #f8f9fa;
+        border: 2px solid #e9ecef;
+        border-radius: 15px;
+        padding: 20px 15px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .status-option:hover {
+        border-color: #4A7856;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .status-option.active {
+        border-color: #4A7856;
+        background: #e8f5e9;
+    }
+    
+    .status-option i {
+        font-size: 2rem;
+        color: #4A7856;
+        margin-bottom: 10px;
+    }
+    
+    .status-option span {
+        display: block;
+        font-weight: 600;
+        color: #2C5F2D;
+    }
+    
+    .status-option small {
+        display: block;
+        font-size: 0.8rem;
+        color: #6c757d;
+        margin-top: 5px;
+    }
+    
+    .btn-update {
+        background: linear-gradient(135deg, #2C5F2D 0%, #4A7856 100%);
+        color: white;
+        border: none;
+        padding: 16px 40px;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        width: 100%;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-top: 20px;
+    }
+    
+    .btn-update:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 40px rgba(44, 95, 45, 0.4);
+        background: linear-gradient(135deg, #1e431f 0%, #2C5F2D 100%);
+    }
+    
+    .btn-update i {
+        font-size: 1.2rem;
+    }
+    
+    .btn-update:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+    }
+    
+    .status-badge {
+        display: inline-block;
+        padding: 8px 20px;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-right: 10px;
+    }
+    
+    .status-pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+    
+    .status-confirmed {
+        background: #cce5ff;
+        color: #004085;
+    }
+    
+    .status-outfordelivery {
+        background: #d4edda;
+        color: #155724;
+    }
+    
+    .status-delivered {
+        background: #d1e7dd;
+        color: #0f5132;
+    }
+    
+    .update-note {
+        background: #e8f5e9;
+        border-radius: 15px;
+        padding: 15px 20px;
+        margin: 25px 0 15px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: #2C5F2D;
+    }
+    
+    .update-note i {
+        font-size: 1.5rem;
+        color: #4A7856;
+    }
+    
+    .update-note p {
+        margin: 0;
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+    
+    @media (max-width: 768px) {
+        .update-order-page {
+            padding: 100px 15px 30px;
+        }
+        
+        .update-body {
+            padding: 30px 20px;
+        }
+        
+        .update-header {
+            padding: 30px 20px;
+        }
+        
+        .status-options {
+            grid-template-columns: 1fr;
+        }
+        
+        .order-info {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
+</style>
+
+<div class="update-order-page">
+    <div class="update-container">
+        <div class="update-card">
+            <div class="update-header">
+                <i class="fas fa-truck"></i>
+                <h2>Update Order Status</h2>
+                <p>Change the current status of the order</p>
+            </div>
+            
+            <div class="update-body">
+                <!-- Order Information (You can pass order details from view) -->
+                <div class="order-info">
+                    <i class="fas fa-box"></i>
+                    <div class="order-info-content">
+                        <h4>Order #{{ order.id|default:"123456" }}</h4>
+                        <p>Current Status: 
+                            <span class="status-badge status-pending">Pending</span>
+                        </p>
+                    </div>
+                </div>
+                
+                <form method="post" id="updateOrderForm">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-flag"></i>
+                            Select New Status
+                        </label>
+                        
+                        <!-- Status Options Grid -->
+                        <div class="status-options">
+                            <div class="status-option" data-status="Pending" onclick="selectStatus('Pending')">
+                                <i class="fas fa-clock"></i>
+                                <span>Pending</span>
+                                <small>Order received</small>
+                            </div>
+                            
+                            <div class="status-option" data-status="Order Confirmed" onclick="selectStatus('Order Confirmed')">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Confirmed</span>
+                                <small>Order verified</small>
+                            </div>
+                            
+                            <div class="status-option" data-status="Out for Delivery" onclick="selectStatus('Out for Delivery')">
+                                <i class="fas fa-truck"></i>
+                                <span>Out for Delivery</span>
+                                <small>On the way</small>
+                            </div>
+                            
+                            <div class="status-option" data-status="Delivered" onclick="selectStatus('Delivered')">
+                                <i class="fas fa-home"></i>
+                                <span>Delivered</span>
+                                <small>Completed</small>
+                            </div>
+                        </div>
+                        
+                        <!-- Hidden Status Input -->
+                        {% render_field orderForm.status class="status-select" id="statusInput" style="display: none;" %}
+                    </div>
+                    
+                    <div class="update-note">
+                        <i class="fas fa-info-circle"></i>
+                        <p>Updating the order status will notify the customer about their order progress. Make sure to select the correct status.</p>
+                    </div>
+                    
+                    <button type="submit" class="btn-update" id="submitBtn">
+                        <i class="fas fa-sync-alt"></i>
+                        Update Status
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Function to handle status selection
+    function selectStatus(status) {
+        // Update hidden input
+        const statusInput = document.getElementById('statusInput');
+        if (statusInput) {
+            statusInput.value = status;
+        }
+        
+        // Remove active class from all options
+        document.querySelectorAll('.status-option').forEach(opt => {
+            opt.classList.remove('active');
+        });
+        
+        // Add active class to selected option
+        const selectedOption = Array.from(document.querySelectorAll('.status-option')).find(
+            opt => opt.dataset.status === status
+        );
+        if (selectedOption) {
+            selectedOption.classList.add('active');
+        }
+        
+        // Enable submit button if status is selected
+        const submitBtn = document.getElementById('submitBtn');
+        if (submitBtn) {
+            submitBtn.disabled = false;
+        }
+    }
+    
+    // Set initial active status if there's a current value
+    document.addEventListener('DOMContentLoaded', function() {
+        const statusInput = document.getElementById('statusInput');
+        if (statusInput && statusInput.value) {
+            selectStatus(statusInput.value);
+        } else {
+            // Disable submit button initially
+            const submitBtn = document.getElementById('submitBtn');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+            }
+        }
+    });
+    
+    // Form submission validation
+    document.getElementById('updateOrderForm')?.addEventListener('submit', function(e) {
+        const statusInput = document.getElementById('statusInput');
+        if (!statusInput || !statusInput.value) {
+            e.preventDefault();
+            alert('Please select a status before updating.');
+        } else {
+            // Show confirmation dialog
+            if (!confirm('Are you sure you want to update the order status? The customer will be notified.')) {
+                e.preventDefault();
+            }
+        }
+    });
+    
+    // Add hover effect animation
+    document.querySelectorAll('.status-option').forEach(option => {
+        option.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px)';
+        });
+        
+        option.addEventListener('mouseleave', function() {
+            if (!this.classList.contains('active')) {
+                this.style.transform = 'translateY(0)';
+            }
+        });
+    });
+</script>
+{% endblock %}

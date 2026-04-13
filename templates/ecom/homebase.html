@@ -1,0 +1,736 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgroMarket - Fresh Agricultural Products</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, rgba(44, 95, 45, 0.98) 0%, rgba(74, 120, 86, 0.98) 100%) !important;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding-top: 90px; /* Add padding to prevent content from hiding under fixed navbar */
+        }
+        
+        /* Navbar Styles */
+        .navbar-custom {
+            background: transparent !important;
+            padding: 1rem 2rem !important;
+            position: fixed !important;
+            width: 100%;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        
+        .navbar-custom.scrolled {
+            background: linear-gradient(135deg, rgba(44, 95, 45, 0.98) 0%, rgba(74, 120, 86, 0.98) 100%) !important;
+            backdrop-filter: blur(10px);
+            padding: 0.8rem 2rem !important;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .navbar-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        
+        .navbar-brand-custom {
+            font-size: 1.8rem !important;
+            font-weight: 700 !important;
+            color: white !important;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            margin-right: 1rem;
+        }
+        
+        .navbar-brand-custom i {
+            color: #FFE5B4;
+            font-size: 2rem;
+            animation: leafSpin 3s infinite ease-in-out;
+        }
+        
+        @keyframes leafSpin {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(10deg); }
+            75% { transform: rotate(-10deg); }
+        }
+        
+        .navbar-toggler {
+            border: 2px solid rgba(255, 255, 255, 0.3) !important;
+            padding: 0.5rem !important;
+            background: transparent !important;
+        }
+        
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+        }
+        
+        .navbar-nav {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            margin: 0 1rem;
+        }
+        
+        .nav-link-custom {
+            color: white !important;
+            font-weight: 500;
+            padding: 0.6rem 1.2rem !important;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            position: relative;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+        
+        .nav-link-custom:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .nav-link-custom::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background: #FFE5B4;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link-custom:hover::after {
+            width: 70%;
+        }
+        
+        /* Cart Button */
+        .cart-btn {
+            background: linear-gradient(135deg, #2C5F2D 0%, #4A7856 100%);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            padding: 0.7rem 1.8rem;
+            border-radius: 50px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            font-size: 0.95rem;
+            white-space: nowrap;
+            margin-left: 1rem;
+        }
+        
+        .cart-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(44, 95, 45, 0.4);
+            color: white;
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .cart-badge {
+            background: #FFE5B4;
+            color: #2C5F2D;
+            border-radius: 30px;
+            padding: 0.2rem 0.8rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-left: 5px;
+        }
+        
+        /* Dropdown Menu */
+        .dropdown-custom {
+            position: relative;
+        }
+        
+        .dropdown-menu-custom {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            border: none;
+            border-radius: 15px;
+            padding: 0.8rem;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            min-width: 220px;
+            margin-top: 0.8rem;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1001;
+        }
+        
+        .dropdown-custom:hover .dropdown-menu-custom {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .dropdown-item-custom {
+            color: #2C5F2D;
+            padding: 0.8rem 1.2rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+        
+        .dropdown-item-custom:hover {
+            background: linear-gradient(135deg, #2C5F2D 0%, #4A7856 100%);
+            color: white;
+            transform: translateX(5px);
+        }
+        
+        .dropdown-item-custom i {
+            width: 20px;
+            font-size: 1.1rem;
+        }
+        
+        .dropdown-divider {
+            height: 1px;
+            background: #e9ecef;
+            margin: 0.5rem 0;
+        }
+        
+        /* Search Form */
+        .search-form {
+            position: relative;
+            min-width: 380px;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.95);
+        }
+        
+        .search-input:focus {
+            outline: none;
+            box-shadow: 0 8px 30px rgba(44, 95, 45, 0.3);
+            background: white;
+        }
+        
+        .search-input::placeholder {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .search-btn {
+            position: absolute;
+            right: 5px;
+            top: 5px;
+            background: linear-gradient(135deg, #2C5F2D 0%, #4A7856 100%);
+            border: none;
+            color: white;
+            padding: 0.5rem 1.8rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .search-btn:hover {
+            background: linear-gradient(135deg, #1e431f 0%, #2C5F2D 100%);
+            transform: translateX(-2px);
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            width: 100%;
+            margin-top: 20px;
+            padding: 0;
+        }
+        
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, #1a3b1a 0%, #2C5F2D 100%);
+            color: white;
+            padding: 2rem 3rem;
+            margin-top: auto;
+            position: relative;
+            width: 100%;
+        }
+        
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #FFE5B4, #4A7856, #FFE5B4);
+        }
+        
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .footer p {
+            margin: 0;
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .social-links a {
+            color: #FFE5B4;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .social-links a:hover {
+            background: #FFE5B4;
+            color: #2C5F2D;
+            transform: translateY(-3px) rotate(360deg);
+        }
+        
+        /* Responsive */
+        @media (max-width: 1400px) {
+            .search-form {
+                min-width: 320px;
+            }
+            
+            .nav-link-custom {
+                padding: 0.5rem 1rem !important;
+            }
+        }
+        
+        @media (max-width: 1200px) {
+            .navbar-container {
+                padding: 0 1rem;
+            }
+            
+            .search-form {
+                min-width: 280px;
+            }
+            
+            .cart-btn {
+                padding: 0.6rem 1.2rem;
+                margin-left: 0.5rem;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            body {
+                padding-top: 70px;
+            }
+            
+            .navbar-custom {
+                padding: 0.8rem 1rem !important;
+            }
+            
+            .navbar-container {
+                position: relative;
+            }
+            
+            .navbar-collapse {
+                position: absolute;
+                top: 100%;
+                left: 1rem;
+                right: 1rem;
+                background: linear-gradient(135deg, #2C5F2D 0%, #4A7856 100%);
+                padding: 1.5rem;
+                border-radius: 20px;
+                margin-top: 1rem;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+                max-height: 80vh;
+                overflow-y: auto;
+                z-index: 1000;
+            }
+            
+            .navbar-nav {
+                flex-direction: column;
+                align-items: stretch;
+                margin: 0 0 1rem 0;
+                gap: 0.3rem;
+            }
+            
+            .nav-link-custom {
+                justify-content: flex-start;
+                padding: 0.8rem 1rem !important;
+                width: 100%;
+            }
+            
+            .search-form {
+                min-width: auto;
+                width: 100%;
+                margin: 1rem 0;
+            }
+            
+            .dropdown-menu-custom {
+                position: static;
+                opacity: 1;
+                visibility: visible;
+                transform: none;
+                box-shadow: none;
+                margin-top: 0.5rem;
+                background: rgba(255, 255, 255, 0.1);
+                backdrop-filter: blur(10px);
+                width: 100%;
+            }
+            
+            .dropdown-item-custom {
+                color: white;
+            }
+            
+            .dropdown-item-custom:hover {
+                background: rgba(255, 255, 255, 0.2);
+            }
+            
+            .dropdown-divider {
+                background: rgba(255, 255, 255, 0.2);
+            }
+            
+            .cart-btn {
+                width: 100%;
+                justify-content: center;
+                margin: 1rem 0 0 0;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .navbar-brand-custom {
+                font-size: 1.5rem !important;
+            }
+            
+            .navbar-brand-custom i {
+                font-size: 1.6rem;
+            }
+            
+            .footer {
+                padding: 1.5rem;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .search-btn span {
+                display: none;
+            }
+            
+            .search-btn {
+                padding: 0.5rem 1rem;
+            }
+            
+            .search-btn i {
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-custom" id="mainNavbar">
+        <div class="navbar-container">
+            <!-- Brand -->
+            <a class="navbar-brand-custom" href="/">
+                <i class="fas fa-leaf"></i>
+                <span>AgroMarket</span>
+            </a>
+            
+            <!-- Toggler -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" 
+                    aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <!-- Navbar Content -->
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav">
+                    {% if request.user.is_authenticated %}
+                        <!-- Customer Navigation -->
+                        <li class="nav-item">
+                            <a class="nav-link-custom" href="/">
+                                <i class="fas fa-home"></i>
+                                <span>Home</span>
+                            </a>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <a class="nav-link-custom" href="/my-order">
+                                <i class="fas fa-box"></i>
+                                <span>My Orders</span>
+                            </a>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <a class="nav-link-custom" href="/my-profile">
+                                <i class="fas fa-user"></i>
+                                <span>Profile</span>
+                            </a>
+                        </li>
+                        
+                        <li class="nav-item dropdown-custom">
+                            <a class="nav-link-custom" href="#" role="button">
+                                <i class="fas fa-ellipsis-h"></i>
+                                <span>More</span>
+                                <i class="fas fa-chevron-down" style="font-size: 0.8rem; margin-left: 5px;"></i>
+                            </a>
+                            <div class="dropdown-menu-custom">
+                                <a class="dropdown-item-custom" href="/send-feedback">
+                                    <i class="fas fa-comment"></i>
+                                    <span>Send Feedback</span>
+                                </a>
+                                <a class="dropdown-item-custom" href="#">
+                                    <i class="fas fa-question-circle"></i>
+                                    <span>Help Center</span>
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item-custom" href="/logout">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    <span>Logout</span>
+                                </a>
+                            </div>
+                        </li>
+                    {% else %}
+                        <!-- Guest Navigation -->
+                        <li class="nav-item">
+                            <a class="nav-link-custom" href="/">
+                                <i class="fas fa-home"></i>
+                                <span>Home</span>
+                            </a>
+                        </li>
+                        
+                        <li class="nav-item dropdown-custom">
+                            <a class="nav-link-custom" href="#" role="button">
+                                <i class="fas fa-user"></i>
+                                <span>Account</span>
+                                <i class="fas fa-chevron-down" style="font-size: 0.8rem; margin-left: 5px;"></i>
+                            </a>
+                            <div class="dropdown-menu-custom">
+                                <a class="dropdown-item-custom" href="/customerlogin">
+                                    <i class="fas fa-sign-in-alt"></i>
+                                    <span>Login</span>
+                                </a>
+                                <a class="dropdown-item-custom" href="/customersignup">
+                                    <i class="fas fa-user-plus"></i>
+                                    <span>Create Account</span>
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item-custom" href="/adminclick">
+                                    <i class="fas fa-user-shield"></i>
+                                    <span>Admin Login</span>
+                                </a>
+                            </div>
+                        </li>
+                        
+                        <li class="nav-item dropdown-custom">
+                            <a class="nav-link-custom" href="#" role="button">
+                                <i class="fas fa-ellipsis-h"></i>
+                                <span>More</span>
+                                <i class="fas fa-chevron-down" style="font-size: 0.8rem; margin-left: 5px;"></i>
+                            </a>
+                            <div class="dropdown-menu-custom">
+                                <a class="dropdown-item-custom" href="/send-feedback">
+                                    <i class="fas fa-comment"></i>
+                                    <span>Feedback</span>
+                                </a>
+                                <a class="dropdown-item-custom" href="#">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span>About Us</span>
+                                </a>
+                                <a class="dropdown-item-custom" href="#">
+                                    <i class="fas fa-phone"></i>
+                                    <span>Contact</span>
+                                </a>
+                            </div>
+                        </li>
+                    {% endif %}
+                </ul>
+                
+                <!-- Search Form -->
+                <form class="search-form" action="/search" method="get">
+                    <input type="search" class="search-input" name="query" 
+                           placeholder="Search fresh vegetables, fruits..." required>
+                    <button type="submit" class="search-btn">
+                        <i class="fas fa-search"></i>
+                        <span>Search</span>
+                    </button>
+                </form>
+                
+                <!-- Cart Button -->
+                <a class="cart-btn" href="/cart">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>My Cart</span>
+                    <span class="cart-badge">{{ product_count_in_cart|default:'0' }}</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('mainNavbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const navbar = document.getElementById('mainNavbar');
+            const toggler = document.querySelector('.navbar-toggler');
+            const collapse = document.getElementById('navbarContent');
+            
+            if (navbar && !navbar.contains(event.target) && collapse && collapse.classList.contains('show')) {
+                if (toggler) {
+                    toggler.click();
+                }
+            }
+        });
+
+        // Close mobile menu on link click
+        document.querySelectorAll('.nav-link-custom, .dropdown-item-custom').forEach(link => {
+            link.addEventListener('click', function(e) {
+                // Don't close if it's a dropdown toggle on desktop
+                if (window.innerWidth > 992 && this.closest('.dropdown-custom')) {
+                    return;
+                }
+                
+                const navbarCollapse = document.getElementById('navbarContent');
+                if (navbarCollapse && navbarCollapse.classList.contains('show')) {
+                    const toggler = document.querySelector('.navbar-toggler');
+                    if (toggler) {
+                        toggler.click();
+                    }
+                }
+            });
+        });
+
+        // Handle dropdowns on mobile
+        if (window.innerWidth <= 992) {
+            document.querySelectorAll('.dropdown-custom > .nav-link-custom').forEach(dropdown => {
+                dropdown.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const menu = this.nextElementSibling;
+                    if (menu) {
+                        if (menu.style.display === 'block') {
+                            menu.style.display = 'none';
+                        } else {
+                            // Hide other open dropdowns
+                            document.querySelectorAll('.dropdown-menu-custom').forEach(m => {
+                                if (m !== menu) m.style.display = 'none';
+                            });
+                            menu.style.display = 'block';
+                        }
+                    }
+                });
+            });
+        }
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId && targetId !== '#') {
+                    const target = document.querySelector(targetId);
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                }
+            });
+        });
+
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    </script>
+    
+    {% block scripts %}
+    {% endblock %}
+</body>
+</html>

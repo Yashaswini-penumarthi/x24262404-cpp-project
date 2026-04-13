@@ -40,29 +40,10 @@ jobs:
           echo "Java installation done"
 
 
-  build_and_test:
-    runs-on: ubuntu-latest
-    needs: prebuild
-
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.11"
-
-      - name: Install Dependencies
-        run: |
-          pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install pylint coverage
-
 
   deploy:
     runs-on: ubuntu-latest
-    needs: build_and_test
+    needs: prebuild
 
     steps:
       - name: Download artifact
